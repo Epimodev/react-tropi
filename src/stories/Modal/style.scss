@@ -1,0 +1,63 @@
+.button {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+
+  padding: 5px 10px;
+  background-color: #34495e;
+  color: white;
+  border-radius: 5px;
+}
+
+.modal {
+  padding: 50px;
+  background: white;
+  border-radius: 5px;
+}
+
+.overlay {
+  background-color: rgba(black, 0.25);
+}
+
+.animationEnter {
+  .modal {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  .overlay {
+    opacity: 0;
+  }
+}
+.animationEnterActive {
+  .modal {
+    opacity: 1;
+    transform: scale(1);
+    transition: 300ms;
+  }
+  .overlay {
+    opacity: 1;
+    transition: 300ms;
+  }
+}
+.animationExit {
+  .modal {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .overlay {
+    opacity: 1;
+  }
+}
+.animationExitActive {
+  .modal {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: 300ms;
+  }
+  .overlay {
+    opacity: 0;
+    transition: 300ms;
+  }
+}
