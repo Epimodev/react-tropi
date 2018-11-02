@@ -103,11 +103,11 @@ classNames to apply on component during animation.
 **animationDuration** `(optional) number | { enter: number; exit: number }`  
 duration of the animation.
 
-**onClickOutside**  `(optional) () => void`
+**onClickOutside**  `(optional) () => void`  
 function called when user click on overlay or on press escape key
 
-**zIndex**  `(optional) number`
-default to 1, you can chose an appropriate z-index to fit with you're expected behavior with other components using portal
+**zIndex**  `(optional) number`  
+default to 1, you can chose an appropriate z-index to fit with your expected behavior with other components using portal
 
 **children** `ReactNode`  
 modal content
