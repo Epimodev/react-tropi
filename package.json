@@ -55,7 +55,7 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
-    "react-aniportal": "^0.1.4",
+    "react-aniportal": "^0.1.5",
     "tslib": "^1.9.3"
   }
 }
