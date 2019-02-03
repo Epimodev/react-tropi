@@ -8,7 +8,6 @@ const config = {
     importLoaders: 1,
     localIdentName: '[hash:5]-[local]',
     url: false,
-    minimize: true,
   },
 };
 
