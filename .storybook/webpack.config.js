@@ -4,10 +4,11 @@ const projectRoot = path.resolve(__dirname, '../');
 
 const config = {
   cssOptions: {
+    modules: {
+      localIdentName: '[hash:5]-[local]',
+    },
     modules: true,
     importLoaders: 1,
-    localIdentName: '[hash:5]-[local]',
-    url: false,
   },
 };
 
