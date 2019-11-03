@@ -1,4 +1,4 @@
-import { createElement, Component, Fragment } from 'react';
+import { createElement, Fragment, useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { Modal } from '../../../src/index';
 import * as style from './style.scss';
@@ -12,34 +12,31 @@ const animationClassNames = {
 
 storiesOf('Modal', module).add('default', () => <InteractiveComponent />);
 
-class InteractiveComponent extends Component<{}, { displayed: boolean }> {
-  state = { displayed: false };
+const InteractiveComponent: React.FC = () => {
+  const [displayed, setDisplayed] = useState(false);
 
-  openModal = () => this.setState({ displayed: true });
-  closeModal = () => this.setState({ displayed: false });
+  const openModal = () => setDisplayed(true);
+  const closeModal = () => setDisplayed(false);
 
-  render() {
-    const { displayed } = this.state;
-
-    return (
-      <Fragment>
-        <button className={style.button} onClick={this.openModal}>
-          Open Modal
+  return (
+    <Fragment>
+      <button className={style.button} onClick={openModal}>
+        Open Modal
+      </button>
+      <Modal
+        displayed={displayed}
+        animationDuration={500}
+        className={style.modal}
+        overlayClassName={style.overlay}
+        animationClassNames={animationClassNames}
+        onClickOutside={closeModal}
+        onEscapePress={closeModal}
+      >
+        <input type="text" />
+        <button className={style.button} onClick={closeModal}>
+          Close Modal
         </button>
-        <Modal
-          displayed={displayed}
-          animationDuration={500}
-          className={style.modal}
-          overlayClassName={style.overlay}
-          animationClassNames={animationClassNames}
-          onClickOutside={this.closeModal}
-        >
-          <input type="text" />
-          <button className={style.button} onClick={this.closeModal}>
-            Close Modal
-          </button>
-        </Modal>
-      </Fragment>
-    );
-  }
-}
+      </Modal>
+    </Fragment>
+  );
+};

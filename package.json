@@ -32,7 +32,7 @@
     }
   },
   "peer-dependencies": {
-    "react": "^16.0.0"
+    "react": "^16.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
@@ -55,7 +55,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "react-aniportal": "^0.1.7",
+    "react-aniportal": "^0.2.0",
     "tslib": "^1.10.0"
   }
 }

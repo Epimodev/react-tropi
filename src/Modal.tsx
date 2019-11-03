@@ -1,4 +1,4 @@
-import { createElement, Component, ReactNode, CSSProperties, Fragment } from 'react';
+import { createElement, Fragment, useRef, useEffect } from 'react';
 import AniPortal from 'react-aniportal';
 
 interface AnimationClassNames {
@@ -10,19 +10,19 @@ interface AnimationClassNames {
 
 interface Props {
   displayed: boolean;
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
   overlayClassName?: string;
   animationClassNames?: AnimationClassNames;
-  animationDuration: number | { enter: number; exit: number };
+  animationDuration?: number | { enter: number; exit: number };
   onClickOutside?: () => void;
-  zIndex: number;
+  onEscapePress?: () => void;
+  zIndex?: number;
 }
 
-const TAB_KEYCODE = 9;
 const ESCAPE_KEYCODE = 27;
 
-function getPortalStyle(zIndex: number): CSSProperties {
+function getPortalStyle(zIndex: number): React.CSSProperties {
   return {
     position: 'absolute',
     top: 0,
@@ -35,11 +35,11 @@ function getPortalStyle(zIndex: number): CSSProperties {
     alignItems: 'center',
   };
 }
-const containerStyle: CSSProperties = {
+const containerStyle: React.CSSProperties = {
   position: 'relative',
   zIndex: 2,
 };
-const backgroundStyle: CSSProperties = {
+const backgroundStyle: React.CSSProperties = {
   position: 'absolute',
   top: 0,
   right: 0,
@@ -48,163 +48,61 @@ const backgroundStyle: CSSProperties = {
   zIndex: 1,
 };
 
-class Modal extends Component<Props> {
-  container: HTMLDivElement | null = null;
-  focusableElements: HTMLElement[] = [];
-  beforeOpenFocusedELement: HTMLElement | null = null;
+function useEscapePress(displayed: boolean, onEscapePress: (() => void) | undefined) {
+  const handleEscapeRef = useRef(onEscapePress);
 
-  static defaultProps = {
-    animationDuration: 0,
-    zIndex: 1,
-  };
+  useEffect(() => {
+    handleEscapeRef.current = onEscapePress;
+  }, [onEscapePress]);
 
-  constructor(props: Props) {
-    super(props);
-
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.setContainer = this.setContainer.bind(this);
-  }
-
-  componentDidUpdate({ displayed: wasDisplayed }: Props) {
-    const { displayed } = this.props;
-    if (wasDisplayed && !displayed) {
-      this.modalDidClose();
-    }
-    this.focusableElements = this.getFocusableElements();
-  }
-
-  componentDidMount() {
-    if (this.props.displayed) {
-      this.modalDidOpen();
-    }
-  }
-
-  componentWillUnmount() {
-    this.modalDidClose();
-  }
-
-  modalDidOpen() {
-    this.focusableElements = this.getFocusableElements();
-    // keep last focused element to focus it again when modal will be closed
-    this.beforeOpenFocusedELement = document.activeElement as HTMLElement;
-    // set focus on container
-    if (this.container) {
-      this.container.focus();
-    }
-
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  modalDidClose() {
-    this.focusableElements = [];
-    // reset focus on focused element before modal was open
-    if (this.beforeOpenFocusedELement && this.beforeOpenFocusedELement.focus) {
-      this.beforeOpenFocusedELement.focus();
-    }
-    this.beforeOpenFocusedELement = null;
-
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  getFocusableElements(): HTMLElement[] {
-    if (this.container) {
-      const cssQuery = // tslint:disable-next-line max-line-length
-        'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
-      const nodeList = this.container.querySelectorAll(cssQuery);
-      return Array.prototype.slice.call(nodeList);
-    }
-    return [];
-  }
-
-  handleKeyDown(event: KeyboardEvent) {
-    const { displayed, onClickOutside } = this.props;
-    if (displayed) {
-      switch (event.keyCode) {
-        case TAB_KEYCODE: {
-          const { shiftKey } = event;
-          if (this.focusableElements.length === 0) {
-            event.preventDefault();
-          } else if (shiftKey) {
-            this.focusPreviousElement(event);
-          } else {
-            this.focusNextElement(event);
-          }
-          break;
-        }
-        case ESCAPE_KEYCODE: {
-          if (onClickOutside) {
-            onClickOutside();
-          }
-          break;
-        }
+  useEffect(() => {
+    const handleKeyboard = (event: KeyboardEvent) => {
+      if (event.keyCode === ESCAPE_KEYCODE && handleEscapeRef.current) {
+        handleEscapeRef.current();
       }
-    }
-  }
+    };
 
-  focusNextElement(event: KeyboardEvent) {
-    const lastFocusableIndex = this.focusableElements.length - 1;
-    const lastFocusableElement = this.focusableElements[lastFocusableIndex];
-    if (document.activeElement === lastFocusableElement) {
-      const firstFocusableElement = this.focusableElements[0];
-      event.preventDefault();
-      firstFocusableElement.focus();
-    }
-  }
+    window.addEventListener('keydown', handleKeyboard);
 
-  focusPreviousElement(event: KeyboardEvent) {
-    const firstFocusableElement = this.focusableElements[0];
-    if (document.activeElement === firstFocusableElement) {
-      const lastFocusableIndex = this.focusableElements.length - 1;
-      const lastFocusableElement = this.focusableElements[lastFocusableIndex];
-      event.preventDefault();
-      lastFocusableElement.focus();
-    }
-  }
-
-  setContainer(ref: HTMLDivElement | null) {
-    this.container = ref;
-    if (ref) {
-      // call modal did open here because ref is null in componentDidMount and componentDidUpdate
-      this.modalDidOpen();
-    }
-  }
-
-  render() {
-    const {
-      displayed,
-      children,
-      className,
-      overlayClassName,
-      animationClassNames,
-      animationDuration,
-      onClickOutside,
-      zIndex,
-    } = this.props;
-
-    if (displayed) {
-      return (
-        <AniPortal
-          classNames={animationClassNames}
-          style={getPortalStyle(zIndex)}
-          timeout={animationDuration}
-        >
-          <Fragment>
-            <div
-              role="dialog"
-              tabIndex={-1}
-              ref={this.setContainer}
-              className={className}
-              style={containerStyle}
-            >
-              {children}
-            </div>
-            <div className={overlayClassName} style={backgroundStyle} onClick={onClickOutside} />
-          </Fragment>
-        </AniPortal>
-      );
-    }
-    return null;
-  }
+    return () => {
+      window.removeEventListener('keydown', handleKeyboard);
+    };
+  }, [displayed]);
 }
+
+const Modal: React.FC<Props> = ({
+  displayed,
+  children,
+  className,
+  overlayClassName,
+  animationClassNames,
+  animationDuration = 0,
+  onClickOutside,
+  onEscapePress,
+  zIndex = 1,
+}) => {
+  useEscapePress(displayed, onEscapePress);
+
+  if (displayed) {
+    return (
+      <AniPortal
+        classNames={animationClassNames}
+        style={getPortalStyle(zIndex)}
+        timeout={animationDuration}
+      >
+        <Fragment>
+          <div role="dialog" className={className} style={containerStyle}>
+            {children}
+          </div>
+          <div className={overlayClassName} style={backgroundStyle} onClick={onClickOutside} />
+        </Fragment>
+      </AniPortal>
+    );
+  }
+
+  return null;
+};
+
+Modal.displayName = 'Modal (react-tropi)';
 
 export default Modal;
