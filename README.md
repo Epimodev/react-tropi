@@ -1,6 +1,8 @@
 # react-tropi
 A react component to create accessible modal with css animations
 
+> since version 0.2 the component use react hooks so you'll need to upgrade react to version >=16.8
+
 ## Install
 
 ```bash
@@ -104,10 +106,13 @@ classNames to apply on component during animation.
 duration of the animation.
 
 **onClickOutside**  `(optional) () => void`  
-function called when user click on overlay or on press escape key
+function called when user click on overlay.
+
+**onEscapePress**  `(optional) () => void`  
+function called when user press escape key.
 
 **zIndex**  `(optional) number`  
-default to 1, you can chose an appropriate z-index to fit with your expected behavior with other components using portal
+default to 1, you can chose an appropriate z-index to fit with your expected behavior with other components using portal.
 
 **children** `ReactNode`  
-modal content
+modal content.
