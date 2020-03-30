@@ -1,6 +1,6 @@
 {
   "name": "react-tropi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A react component to create accessible and animated modal",
   "author": "Frederic Godin",
   "repository": "Epimodev/react-tropi",
