@@ -24,7 +24,7 @@ const ESCAPE_KEYCODE = 27;
 
 function getPortalStyle(zIndex: number): React.CSSProperties {
   return {
-    position: 'absolute',
+    position: 'fixed',
     top: 0,
     right: 0,
     bottom: 0,
